@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Solução de automação para engarrafamento e rotulagem de garrafas de vinho. Software e hardware disponíveis para venda.">
+  <title>Automação de Engarrafamento e Rotulagem de Vinho</title>
+  <style>
+    :root {
+      --wine: #641f32;
+      --wine-dark: #35121e;
+      --cream: #f7f3ed;
+      --paper: #fffdf9;
+      --gold: #c6a56b;
+      --ink: #25221f;
+      --muted: #6f6963;
+      --line: #e7ded4;
+      --radius: 18px;
+      --shadow: 0 18px 50px rgba(45, 22, 29, .10);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--ink); background: var(--paper); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.6; }
+    a { color: inherit; }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    header { position: absolute; inset: 0 0 auto; z-index: 2; color: white; }
+    .nav { min-height: 84px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 750; letter-spacing: .02em; }
+    .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.55); border-radius: 50%; color: var(--gold); font-size: 20px; }
+    nav { display: flex; align-items: center; gap: 26px; }
+    nav a { text-decoration: none; font-size: 14px; color: rgba(255,255,255,.88); }
+    nav a:hover { color: white; }
+    .nav-cta { border: 1px solid rgba(255,255,255,.6); padding: 10px 16px; border-radius: 999px; }
+    .hero { min-height: 690px; padding: 150px 0 90px; color: white; background: radial-gradient(ellipse at 80% 25%, rgba(148, 75, 87, .38), transparent 34%), linear-gradient(115deg, #2b101a 0%, #501b2b 56%, #6c2b3a 100%); position: relative; overflow: hidden; }
+    .hero::after { content: ""; position: absolute; width: 520px; height: 520px; border: 1px solid rgba(198,165,107,.2); border-radius: 50%; right: -110px; bottom: -260px; box-shadow: 0 0 0 55px rgba(198,165,107,.035), 0 0 0 110px rgba(198,165,107,.025); }
+    .hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 58px; align-items: center; position: relative; z-index: 1; }
+    .eyebrow { color: var(--gold); text-transform: uppercase; font-size: 12px; font-weight: 800; letter-spacing: .18em; }
+    h1 { font-size: clamp(2.6rem, 5vw, 4.6rem); line-height: 1.04; letter-spacing: -.045em; margin: 18px 0 22px; max-width: 760px; }
+    .hero p { font-size: 18px; color: rgba(255,255,255,.78); max-width: 600px; margin: 0 0 30px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn { display: inline-flex; justify-content: center; align-items: center; gap: 9px; border-radius: 999px; padding: 14px 21px; font-weight: 750; text-decoration: none; transition: transform .2s, background .2s; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-gold { background: var(--gold); color: #24151a; }
+    .btn-outline { border: 1px solid rgba(255,255,255,.45); color: white; }
+    .visual { min-height: 390px; border: 1px solid rgba(255,255,255,.18); border-radius: 28px; padding: 24px; background: linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.025)); display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 30px 80px rgba(0,0,0,.17); backdrop-filter: blur(8px); }
+    .visual-top { display: flex; justify-content: space-between; align-items: center; color: rgba(255,255,255,.7); font-size: 12px; text-transform: uppercase; letter-spacing: .12em; }
+    .bottles { display: flex; align-items: end; justify-content: center; gap: 17px; height: 235px; }
+    .bottle { width: 56px; height: 180px; border-radius: 12px 12px 8px 8px; position: relative; background: linear-gradient(90deg, #1d3b2b, #345b3e 48%, #183326); box-shadow: inset 7px 0 10px rgba(255,255,255,.08), 8px 10px 20px rgba(0,0,0,.2); }
+    .bottle::before { content: ""; position: absolute; width: 22px; height: 38px; top: -30px; left: 17px; border-radius: 5px 5px 2px 2px; background: linear-gradient(90deg, #7d5a32, #c5a36c, #806039); }
+    .bottle::after { content: ""; position: absolute; left: 5px; right: 5px; height: 51px; top: 78px; background: #eadfc9; border-radius: 2px; border-top: 4px solid var(--gold); }
+    .bottle:nth-child(2) { height: 205px; }
+    .bottle:nth-child(2)::after { top: 94px; }
+    .bottle:nth-child(3) { height: 190px; }
+    .bottle:nth-child(3)::after { top: 84px; }
+    .bottle:nth-child(4) { height: 215px; }
+    .bottle:nth-child(4)::after { top: 103px; }
+    .visual-bottom { border-top: 1px solid rgba(255,255,255,.18); padding-top: 16px; display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: rgba(255,255,255,.75); }
+    .section { padding: 92px 0; }
+    .section-soft { background: var(--cream); }
+    .section-head { max-width: 700px; margin-bottom: 38px; }
+    .section-head h2 { font-size: clamp(2rem, 3.5vw, 3rem); line-height: 1.12; letter-spacing: -.035em; margin: 12px 0 14px; }
+    .section-head p { color: var(--muted); margin: 0; font-size: 17px; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .card { background: white; border: 1px solid var(--line); border-radius: var(--radius); padding: 27px; }
+    .icon { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; background: #f2e7e5; color: var(--wine); font-size: 22px; margin-bottom: 20px; }
+    .card h3 { margin: 0 0 9px; font-size: 19px; }
+    .card p { color: var(--muted); margin: 0; font-size: 15px; }
+    .split { display: grid; grid-template-columns: .9fr 1.1fr; gap: 65px; align-items: start; }
+    .split h2 { font-size: clamp(2rem, 3.5vw, 3rem); line-height: 1.12; letter-spacing: -.035em; margin: 12px 0 18px; }
+    .split p { color: var(--muted); }
+    .check-list { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 15px; }
+    .check-list li { display: flex; gap: 12px; align-items: flex-start; }
+    .check { flex: 0 0 24px; width: 24px; height: 24px; border-radius: 50%; background: #e7eee5; color: #2d6843; display: grid; place-items: center; font-size: 14px; font-weight: 900; margin-top: 1px; }
+    .hardware-panel { background: var(--wine-dark); color: white; border-radius: 24px; padding: 32px; }
+    .hardware-panel h3 { margin: 0 0 8px; font-size: 23px; }
+    .hardware-panel > p { color: rgba(255,255,255,.7); margin-top: 0; }
+    .hardware-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 25px; }
+    .hardware-item { padding: 15px; border: 1px solid rgba(255,255,255,.15); border-radius: 12px; background: rgba(255,255,255,.04); }
+    .hardware-item strong { display: block; font-size: 14px; margin-bottom: 3px; }
+    .hardware-item span { font-size: 12px; color: rgba(255,255,255,.62); }
+    .note { font-size: 12px; color: var(--muted); margin-top: 18px; }
+    .process { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; counter-reset: step; }
+    .process-item { border-top: 2px solid var(--gold); padding: 20px 14px 0 0; }
+    .process-item .num { color: var(--wine); font-size: 12px; font-weight: 850; letter-spacing: .12em; }
+    .process-item h3 { margin: 10px 0 6px; font-size: 17px; }
+    .process-item p { margin: 0; color: var(--muted); font-size: 14px; }
+    .contact { background: linear-gradient(115deg, #32111d, #5a2031); color: white; padding: 82px 0; }
+    .contact-grid { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center; }
+    .contact h2 { font-size: clamp(2rem, 3.8vw, 3.2rem); line-height: 1.1; letter-spacing: -.035em; margin: 12px 0; max-width: 680px; }
+    .contact p { color: rgba(255,255,255,.72); max-width: 650px; margin-bottom: 0; }
+    footer { background: #211016; color: rgba(255,255,255,.6); padding: 23px 0; font-size: 12px; }
+    .footer-row { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    @media (max-width: 850px) {
+      .hero-grid, .split, .contact-grid { grid-template-columns: 1fr; }
+      .hero { padding-top: 130px; }
+      .visual { max-width: 520px; width: 100%; margin: 0 auto; }
+      .cards { grid-template-columns: 1fr 1fr; }
+      .process { grid-template-columns: 1fr 1fr; row-gap: 28px; }
+      .contact-grid { gap: 25px; }
+      nav { gap: 14px; }
+    }
+    @media (max-width: 560px) {
+      .wrap { width: min(100% - 28px, 1120px); }
+      .nav { min-height: 72px; }
+      nav a:not(.nav-cta) { display: none; }
+      .hero { min-height: auto; padding: 120px 0 64px; }
+      .hero p { font-size: 16px; }
+      .visual { min-height: 330px; padding: 18px; }
+      .bottles { transform: scale(.88); }
+      .section { padding: 66px 0; }
+      .cards, .hardware-list, .process { grid-template-columns: 1fr; }
+      .card { padding: 23px; }
+      .hardware-panel { padding: 23px; }
+      .visual-bottom { flex-direction: column; gap: 4px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="#inicio" aria-label="Adega Automação — início">
+        <span class="brand-mark">A</span><span>ADEGA AUTOMAÇÃO</span>
+      </a>
+      <nav aria-label="Navegação principal">
+        <a href="#solucao">A solução</a>
+        <a href="#equipamento">Equipamento</a>
+        <a href="#processo">Processo</a>
+        <a class="nav-cta" href="#contacto">Pedir informações ↗</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">Tecnologia para a indústria do vinho</div>
+          <h1>Automação que acompanha cada garrafa.</h1>
+          <p>Software e hardware para automação do engarrafamento e da rotulagem de vinho, reunidos numa solução concebida para simplificar operações e dar mais controlo ao processo produtivo.</p>
+          <div class="actions">
+            <a class="btn btn-gold" href="#contacto">Tenho interesse na solução <span aria-hidden="true">↗</span></a>
+            <a class="btn btn-outline" href="#equipamento">Explorar equipamento</a>
+          </div>
+        </div>
+        <div class="visual" aria-label="Ilustração decorativa de garrafas de vinho">
+          <div class="visual-top"><span>Engarrafamento</span><span>·</span><span>Rotulagem</span></div>
+          <div class="bottles" aria-hidden="true">
+            <div class="bottle"></div><div class="bottle"></div><div class="bottle"></div><div class="bottle"></div>
+          </div>
+          <div class="visual-bottom"><span>Software de controlo</span><span>Equipamento industrial</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="solucao">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Uma solução integrada</div>
+          <h2>Software e equipamento, em conjunto.</h2>
+          <p>Uma oportunidade para produtores, engarrafadores e integradores que procuram uma base tecnológica para gerir operações de engarrafamento e rotulagem.</p>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <div class="icon" aria-hidden="true">⌘</div>
+            <h3>Software de automação</h3>
+            <p>Camada de controlo e gestão do processo. As funcionalidades específicas podem ser apresentadas numa demonstração técnica.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">⚙</div>
+            <h3>Hardware existente</h3>
+            <p>Equipamentos e componentes físicos incluídos na oportunidade de venda, sujeitos a inventário e verificação técnica.</p>
+          </article>
+          <article class="card">
+            <div class="icon" aria-hidden="true">◎</div>
+            <h3>Processo coordenado</h3>
+            <p>Automação orientada para as etapas de enchimento, aplicação de rótulos e acompanhamento da linha de produção.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-soft" id="equipamento">
+      <div class="wrap split">
+        <div>
+          <div class="eyebrow">O que está à venda</div>
+          <h2>Uma oportunidade para dar continuidade à tecnologia.</h2>
+          <p>A venda contempla o software e o hardware existente associado à solução de automação de engarrafamento e rotulagem de garrafas de vinho.</p>
+          <ul class="check-list">
+            <li><span class="check">✓</span><span><strong>Software:</strong> aplicação e componentes de automação disponíveis para análise.</span></li>
+            <li><span class="check">✓</span><span><strong>Hardware:</strong> equipamento físico existente, a identificar no inventário.</span></li>
+            <li><span class="check">✓</span><span><strong>Informação técnica:</strong> documentação, configuração e condições de transferência a confirmar com o vendedor.</span></li>
+            <li><span class="check">✓</span><span><strong>Avaliação:</strong> possibilidade de analisar o conjunto e esclarecer dúvidas antes de avançar.</span></li>
+          </ul>
+        </div>
+        <div class="hardware-panel">
+          <div class="eyebrow">Conjunto disponível</div>
+          <h3>Software + hardware</h3>
+          <p>Peça a lista detalhada para conhecer os componentes, o estado do equipamento e o âmbito exato da venda.</p>
+          <div class="hardware-list">
+            <div class="hardware-item"><strong>Software de controlo</strong><span>Funcionalidades a demonstrar</span></div>
+            <div class="hardware-item"><strong>Automação industrial</strong><span>Componentes a inventariar</span></div>
+            <div class="hardware-item"><strong>Engarrafamento</strong><span>Equipamento incluído a confirmar</span></div>
+            <div class="hardware-item"><strong>Rotulagem</strong><span>Equipamento incluído a confirmar</span></div>
+          </div>
+          <p class="note" style="color:rgba(255,255,255,.55)">A lista acima é indicativa. Os equipamentos, quantidades, marcas, modelos e estado de funcionamento devem ser confirmados no inventário final.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="processo">
+      <div class="wrap">
+        <div class="section-head">
+          <div class="eyebrow">Como avançar</div>
+          <h2>Da primeira conversa à avaliação técnica.</h2>
+          <p>Um processo simples para perceber se a solução se adequa à sua operação.</p>
+        </div>
+        <div class="process">
+          <div class="process-item"><div class="num">01 / CONTACTO</div><h3>Partilhe o seu interesse</h3><p>Indique a empresa, o tipo de operação e as informações de que necessita.</p></div>
+          <div class="process-item"><div class="num">02 / INVENTÁRIO</div><h3>Conheça o conjunto</h3><p>Consulte a lista de software, equipamentos e documentação disponível.</p></div>
+          <div class="process-item"><div class="num">03 / AVALIAÇÃO</div><h3>Analise os requisitos</h3><p>Esclareça compatibilidade, estado, instalação e necessidades de integração.</p></div>
+          <div class="process-item"><div class="num">04 / PROPOSTA</div><h3>Receba as condições</h3><p>Discuta preço, âmbito da transferência e logística diretamente com o vendedor.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact" id="contacto">
+      <div class="wrap contact-grid">
+        <div>
+          <div class="eyebrow">Contacto comercial</div>
+          <h2>Quer conhecer o software e o hardware disponíveis?</h2>
+          <p>Entre em contacto para solicitar o inventário, agendar uma demonstração ou discutir as condições de venda da solução.</p>
+        </div>
+        <div class="actions">
+          <!-- Substitua o endereço de email pelo contacto comercial real. -->
+          <a class="btn btn-gold" href="mailto:SEU-EMAIL@exemplo.pt?subject=Interesse%20na%20solu%C3%A7%C3%A3o%20de%20automa%C3%A7%C3%A3o">Contactar o vendedor ↗</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-row">
+      <span>© <span id="year">2026</span> Adega Automação. Todos os direitos reservados.</span>
+      <span>Software e hardware para automação de engarrafamento e rotulagem.</span>
+    </div>
+  </footer>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
